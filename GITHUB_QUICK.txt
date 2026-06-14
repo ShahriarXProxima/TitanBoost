@@ -1,0 +1,30 @@
+# TitanBoost GitHub Setup
+
+## Quick Commands
+
+### 1️⃣ Upload to GitHub (First Time)
+
+```bash
+cd /path/to/TitanBoost
+git init
+git config user.name "Your Name"
+git config user.email "your@email.com"
+git add .
+git commit -m "TitanBoost v1.0.0"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/TitanBoost.git
+git push -u origin main
+```
+
+### 2️⃣ Install on Termux/Android
+
+```bash
+pkg install git
+git clone https://github.com/YOUR-USERNAME/TitanBoost.git
+cd TitanBoost
+sh install-termux.sh
+titanboost
+```
+
+That's it! Replace `YOUR-USERNAME` with your actual GitHub username.
+

@@ -1,0 +1,209 @@
+#!/system/bin/sh
+# TitanBoost - Simplified Interactive CLI for Termux
+# Works in Termux without requiring Magisk/KernelSU
+
+VERSION="1.0.0"
+MODDIR="${PREFIX:-/data/local/tmp}/opt/titanboost"
+TITANBOOST_LOG="/data/local/tmp/titanboost.log"
+TITANBOOST_CONFIG="${PREFIX:-/data/local/tmp}/opt/titanboost/config/config.conf"
+
+# Source all helper modules
+. "$MODDIR/scripts/logger.sh" 2>/dev/null || {
+    echo "[ERROR] Helper scripts not found. Install first: sh install-termux.sh"
+    exit 1
+}
+
+. "$MODDIR/scripts/cpu.sh"
+. "$MODDIR/scripts/gpu.sh"
+. "$MODDIR/scripts/memory.sh"
+. "$MODDIR/scripts/profile.sh"
+. "$MODDIR/scripts/cleaner.sh"
+
+# Display banner
+show_banner() {
+    clear
+    echo "╔════════════════════════════════════════════╗"
+    echo "║      TitanBoost v$VERSION (Termux)               ║"
+    echo "║  Android Performance Optimization           ║"
+    echo "╚════════════════════════════════════════════╝"
+    echo ""
+}
+
+# Display simple menu
+show_menu() {
+    show_banner
+    echo "PROFILES:"
+    echo "  1. balanced         Conservative optimization"
+    echo "  2. gaming           Gaming performance"
+    echo "  3. extreme          Maximum performance"
+    echo ""
+    echo "UTILITIES:"
+    echo "  4. info             Device information"
+    echo "  5. health           System health check"
+    echo "  6. clean            Clean RAM now"
+    echo "  7. log              View logs"
+    echo ""
+    echo "  0. Exit"
+    echo ""
+    echo -n "Choose: "
+}
+
+# Main loop
+main_loop() {
+    load_config
+    detect_soc
+    detect_gpu
+
+    while true; do
+        show_menu
+        read -r choice
+
+        case "$choice" in
+            1)
+                clear
+                log_info "Applying BALANCED profile..."
+                apply_cpu_balanced
+                apply_gpu_balanced
+                apply_memory_balanced
+                apply_thermal_profile "balanced"
+                log_success "✓ Balanced profile applied"
+                sleep 2
+                ;;
+            2)
+                clear
+                log_info "Applying GAMING profile..."
+                apply_cpu_gaming
+                apply_gpu_gaming
+                apply_memory_gaming
+                apply_thermal_profile "gaming"
+                log_success "✓ Gaming profile applied"
+                sleep 2
+                ;;
+            3)
+                clear
+                log_info "Applying EXTREME profile..."
+                apply_cpu_extreme
+                apply_gpu_extreme
+                apply_memory_extreme
+                apply_thermal_profile "extreme"
+                log_success "✓ Extreme profile applied (monitor temperature!)"
+                sleep 2
+                ;;
+            4)
+                clear
+                echo "Device: $(getprop ro.product.device)"
+                echo "Model: $(getprop ro.product.model)"
+                echo "Android: $(getprop ro.build.version.release)"
+                echo "SoC: $DETECTED_SOC"
+                echo "GPU: $DETECTED_GPU"
+                echo ""
+                read -p "Press ENTER to continue..."
+                ;;
+            5)
+                clear
+                check_health
+                echo ""
+                read -p "Press ENTER to continue..."
+                ;;
+            6)
+                clear
+                force_ram_cleanup
+                sleep 2
+                ;;
+            7)
+                clear
+                tail -30 "$TITANBOOST_LOG"
+                echo ""
+                read -p "Press ENTER to continue..."
+                ;;
+            0)
+                clear
+                echo "Goodbye!"
+                exit 0
+                ;;
+            *)
+                echo "Invalid choice"
+                sleep 1
+                ;;
+        esac
+    done
+}
+
+# CLI argument handling
+if [ $# -eq 0 ]; then
+    main_loop
+else
+    case "$1" in
+        balanced)
+            load_config
+            detect_soc
+            detect_gpu
+            apply_cpu_balanced
+            apply_gpu_balanced
+            apply_memory_balanced
+            apply_thermal_profile "balanced"
+            echo "✓ Balanced profile applied"
+            ;;
+        gaming)
+            load_config
+            detect_soc
+            detect_gpu
+            apply_cpu_gaming
+            apply_gpu_gaming
+            apply_memory_gaming
+            apply_thermal_profile "gaming"
+            echo "✓ Gaming profile applied"
+            ;;
+        extreme)
+            load_config
+            detect_soc
+            detect_gpu
+            apply_cpu_extreme
+            apply_gpu_extreme
+            apply_memory_extreme
+            apply_thermal_profile "extreme"
+            echo "✓ Extreme profile applied (WARNING: monitor temperature!)"
+            ;;
+        info)
+            detect_soc
+            detect_gpu
+            echo "Device: $(getprop ro.product.device)"
+            echo "Model: $(getprop ro.product.model)"
+            echo "Android: $(getprop ro.build.version.release)"
+            echo "SoC: $DETECTED_SOC"
+            echo "GPU: $DETECTED_GPU"
+            ;;
+        health)
+            check_health
+            ;;
+        clean)
+            force_ram_cleanup
+            ;;
+        log)
+            tail -50 "$TITANBOOST_LOG"
+            ;;
+        help|--help|-h)
+            echo "TitanBoost v$VERSION - Simple Usage"
+            echo ""
+            echo "Usage: titanboost [PROFILE]"
+            echo ""
+            echo "Profiles:"
+            echo "  balanced              Apply balanced optimization"
+            echo "  gaming                Apply gaming optimization"
+            echo "  extreme               Apply extreme optimization"
+            echo ""
+            echo "Commands:"
+            echo "  info                  Show device information"
+            echo "  health                System health check"
+            echo "  clean                 Force RAM cleanup"
+            echo "  log                   View recent logs"
+            echo ""
+            echo "No arguments = interactive menu"
+            ;;
+        *)
+            echo "Unknown command: $1"
+            echo "Use 'titanboost help' for usage"
+            exit 1
+            ;;
+    esac
+fi

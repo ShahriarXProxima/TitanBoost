@@ -1,0 +1,28 @@
+# TitanBoost Application Whitelist
+# Place this file at: /sdcard/TitanBoost/whitelist.txt
+#
+# Add one package name per line
+# These apps will NOT be killed during background cleanup
+# Lines starting with # are comments
+
+# System Applications (should never be killed)
+com.android.systemui
+com.android.system
+com.android.settings
+com.android.phone
+com.android.bluetooth
+com.android.telephony
+com.android.networkstack
+com.google.android.gms
+com.google.android.gsf
+
+# Common Third-party Apps (add your important apps here)
+# Example:
+# com.facebook.work
+# com.whatsapp
+# com.gmail
+# com.google.android.apps.messaging
+
+# Your Important Apps
+# Add packages you want to protect from being killed
+

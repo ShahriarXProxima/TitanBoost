@@ -1,0 +1,22 @@
+# TitanBoost System Properties
+# LMKD Configuration - Aggressive memory management
+ro.lmk.enable_userspace_lmkd=true
+ro.lmk.psi_complete_stall_ms=700
+ro.lmk.thrashing_limit=30
+ro.lmk.thrashing_limit_decay=50
+ro.lmk.critical_upgrade=true
+ro.lmk.downgrade_memcg_limit_in_event_of_intra_alloc_ooms=true
+
+# VM Tunables - Aggressive caching optimization
+vm.watermark_scale_factor=125
+vm.dirty_ratio=50
+vm.dirty_background_ratio=40
+vm.vfs_cache_pressure=50
+
+# Memory Pressure - Gaming optimized
+ro.zram.enabled=true
+
+# Disable unnecessary power saving features
+persist.sys.usb.config=adb
+ro.hardware.keystore=msm8998
+
